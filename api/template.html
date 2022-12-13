@@ -1,0 +1,40 @@
+<form method="POST" action="{% url 'stock:deleteproducts' %}">
+    {% csrf_token %} {% for product in page_obj %}
+
+    <div class="row">
+        <input type="checkbox" value="{{ product.id }}">
+        <div class="col-sm-2">
+            <h5>{{ product.id }}</h5>
+            <img src="{{ product.Picture.url }}" height="120px" />
+        </div>
+        <div class="col-sm-4">
+            <h5><u>Product Name</u>: {{ product.pro_name }}</h5>
+            <h6><u>Company Name</u>: {{product.companyName}}</h6>
+            <div class="row">
+                <div class="col-sm">
+                    <p>Purchase Price: <b>{{product.Purchase_Price}}</b></p>
+                </div>
+                <div class="col-sm">
+                    <p class="pt-0">Sale Price: <b>{{product.Sale_Price}}</b> </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <p>Quantity <b>{{product.Quantity}}</b></p>
+                </div>
+                <div class="col-sm">
+                    <p> Added By: <b>{{product.saler}}</b> </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <p><b>Added Date</b>:{{ product.pub_date }}</p>
+            <hr/>
+
+
+        </div>
+
+    </div>
+    <hr/> {% endfor %}
+    <input type="submit" class="btn btn-danger" value="Delete">
+</form>

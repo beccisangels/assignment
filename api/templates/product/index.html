@@ -1,0 +1,64 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>django</title>
+</head>
+
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <th>Message subject</th>
+                <th>Message</th>
+                <th>Recipient</th>
+                <th>Delete</th>
+            </thead>
+            <tbody>
+                {%csrf_token%} {% for prod in products %}
+                <tr>
+                    <td>{{prod.subject}}</td>
+                    <td>{{prod.message}}</td>
+                    <td>{{prod.recipient}}</td>
+                    <td><input type="checkbox" name="product_id[]" value="{{prod.id}}" id="delete_product"></td>
+                </tr>
+                {% endfor %}
+                <button type="submit" id="delete_btn">Delete</button>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#delete_btn').click(function() {
+                if (confirm("Are you sure?")) {
+                    var id = [];
+                    var csrf = $('input[name=csrfmiddlewaretoken').val();
+                    $(':checkbox:checked').each(function(i) {
+                        id[i] = $(this).val()
+                    })
+                    console.log(id);
+                    if (id.length === 0) {
+                        alert("Please select items to delete")
+                    } else {
+                        console.log(id)
+                        $.ajax({
+                            url: ".",
+                            method: "POST",
+                            data: {
+                                id,
+                                csrfmiddlewaretoken: csrf
+                            },
+                            success: function(response) {
+
+                            }
+                        })
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>

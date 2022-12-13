@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MessageList, MessageDetail, UserList, UserDetail, MessageViewSet, MessageView, UpdateDeleteMess, delete
+from .views import MessageList, MessageDetail, UserList, UserDetail, MessageViewSet, MessageView, UpdateDeleteMess
 
 urlpatterns = [
     path('message/', MessageList.as_view()),
@@ -10,5 +10,8 @@ urlpatterns = [
     path('deletemess/', MessageView.as_view()),
     path('mess/', UpdateDeleteMess.as_view({'get': 'list'})),
     path('mess/<str:pk_ids>/', UpdateDeleteMess.as_view({'get': 'list'})),
-    path('delete/<str:id>/', delete, name="delete")
+    path('messages/delete/',
+         MessageViewSet.as_view({'get': 'list'}), name='delete_albums')
+    #path('delete/<str:id>/', delete, name="delete")
+    
 ]

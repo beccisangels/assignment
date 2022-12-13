@@ -7,6 +7,13 @@ from rest_framework import status
 from rest_framework.request import Request
 from .models import Message, User
 from .serializers import Message, MessageSerializer, User, UserSerializer
+from django.views import View
+from django.shortcuts import redirect
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
+from django.shortcuts import render
+from django.template import Template, Context
+from django.views.decorators.csrf import csrf_exempt
 
 class MessageList(generics.ListCreateAPIView):
     serializer_class = MessageSerializer
@@ -32,13 +39,54 @@ class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
 
-    @action(methods=["DELETE"], detail =False, )
-    def delete(self, request:Request):
-        delete_id =request.data
-        delete_messages = self.queryset.filter(id__in=delete_id)
+
+
+@api_view(['GET', 'DELETE'])
+def delete_albums(request):
+    """
+        GET:    list all messages
+        DELETE: delete multiple messages
+    """
+
+    if request.method == 'GET':
+        messages = Message.objects.all()
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        ids = request.data
+        albums = Message.objects.filter(id__in=ids)
+        for album in albums:
+            album.delete()
+        serializer = MessageSerializer(albums, many=True)
+        return Response(serializer.data)
+
+
+class Product_View(View):
+
+    def get(self, request):
+        allproduct = Message.objects.all()
+        context = {
+            'products':allproduct
+        }
         
-        delete_messages.delete()
-        return Response( self.serializer_class(delete_messages, many=True).data) 
+        return render(request, "product/index.html", context)
+
+    def post(self, request, *args, **kwargs):
+        if request.method=="POST":
+            product_ids=request.POST.getlist('id[]')
+            albums = Message.objects.filter(id__in=product_ids)
+            for album in albums:
+                album.delete()
+            serializer = MessageSerializer(albums, many=True)
+            return Response(serializer.data)
+
+
+class DeleteProducts(View):
+    def post(self, request, *args, **kwargs):
+        products = self.request.POST.getlist('product')
+        Message.objects.filter(pk__in=products).delete()
+        return redirect('/')
 
 class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MessageSerializer
