@@ -1,0 +1,10 @@
+    @action(methods=["DELETE"], detail =False, )
+    def delete(self, request:Request):
+        delete_id =request.data
+        delete_messages = self.queryset.filter(id__in=delete_id)
+        
+        delete_messages.delete()
+        return Response( self.serializer_class(delete_messages, many=True).data) 
+
+
+curl.exe -X POST -H 'Content-Type: application/json' http://127.0.0.1:8000/delete/ -d '{"id": [4, 7]}'
